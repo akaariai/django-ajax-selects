@@ -74,7 +74,7 @@ class AutoCompleteSelectWidget(forms.widgets.TextInput):
 
         got = data.get(name, None)
         if got:
-            return long(got)
+            return int(got)
         else:
             return None
 
@@ -107,7 +107,7 @@ class AutoCompleteSelectField(forms.fields.CharField):
                 # someone else might have deleted it while you were editing
                 # or your channel is faulty
                 # out of the scope of this field to do anything more than tell you it doesn't exist
-                raise forms.ValidationError(u"%s cannot find object: %s" % (lookup,value))
+                raise forms.ValidationError("%s cannot find object: %s" % (lookup,value))
             return objs[0]
         else:
             if self.required:
@@ -187,7 +187,7 @@ class AutoCompleteSelectMultipleWidget(forms.widgets.SelectMultiple):
 
     def value_from_datadict(self, data, files, name):
         # eg. u'members': [u'|229|4688|190|']
-        return [long(val) for val in data.get(name,'').split('|') if val]
+        return [int(val) for val in data.get(name,'').split('|') if val]
 
     def id_for_label(self, id_):
         return '%s_text' % id_
@@ -203,7 +203,7 @@ class AutoCompleteSelectMultipleField(forms.fields.CharField):
     def __init__(self, channel, *args, **kwargs):
         self.channel = channel
 
-        as_default_help = u'Enter text to search.'
+        as_default_help = 'Enter text to search.'
         help_text = kwargs.get('help_text')
         if not (help_text is None):
             try:
@@ -212,7 +212,7 @@ class AutoCompleteSelectMultipleField(forms.fields.CharField):
                 pass
             else:
                 # monkey patch the django default help text to the ajax selects default help text
-                django_default_help = u'Hold down "Control", or "Command" on a Mac, to select more than one.'
+                django_default_help = 'Hold down "Control", or "Command" on a Mac, to select more than one.'
                 if django_default_help in en_help:
                     en_help = en_help.replace(django_default_help,'').strip()
                     # probably will not show up in translations
@@ -333,7 +333,7 @@ def _check_can_add(self,user,model):
 
 def autoselect_fields_check_can_add(form,model,user):
     """ check the form's fields for any autoselect fields and enable their widgets with + sign add links if permissions allow"""
-    for name,form_field in form.declared_fields.iteritems():
+    for name,form_field in form.declared_fields.items():
         if isinstance(form_field,(AutoCompleteSelectMultipleField,AutoCompleteSelectField)):
             db_field = model._meta.get_field_by_name(name)[0]
             form_field.check_can_add(user,db_field.rel.to)
@@ -351,7 +351,7 @@ def bootstrap():
         css = f.read()
         f = open(os.path.join(directory,"static","js","ajax_select.js"))
         js = f.read()
-        b['inline'] = mark_safe(u"""<style type="text/css">%s</style><script type="text/javascript">//<![CDATA[%s//]]></script>""" % (css,js))
+        b['inline'] = mark_safe("""<style type="text/css">%s</style><script type="text/javascript">//<![CDATA[%s//]]></script>""" % (css,js))
     elif inlines == 'staticfiles':
         b['inline'] = mark_safe("""<style type="text/css">@import url("%sajax_select/css/ajax_select.css");</style><script type="text/javascript" src="%sajax_select/js/ajax_select.js"></script>""" % (settings.STATIC_URL,settings.STATIC_URL))
 

@@ -33,7 +33,7 @@ def ajax_lookup(request,channel):
 
     results = simplejson.dumps([
         {
-            'pk': unicode(getattr(item,'pk',None)),
+            'pk': str(getattr(item,'pk',None)),
             'value': lookup.get_result(item),
             'match' : lookup.format_match(item),
             'repr': lookup.format_item_display(item)

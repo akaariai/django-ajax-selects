@@ -18,8 +18,8 @@ class ReleaseForm(ModelForm):
     label  = make_ajax_field(Release,'label','label',help_text="Search for label by name")
     
     # any extra kwargs are passed onto the field, so you may pass a custom help_text here
-    songs = make_ajax_field(Release,'songs','song',help_text=u"Search for song by title")
+    songs = make_ajax_field(Release,'songs','song',help_text="Search for song by title")
 
     # these are from a fixed array defined in lookups.py
-    title = make_ajax_field(Release,'title','cliche',help_text=u"Autocomplete will suggest clichés about cats.")
+    title = make_ajax_field(Release,'title','cliche',help_text="Autocomplete will suggest clichés about cats.")
 

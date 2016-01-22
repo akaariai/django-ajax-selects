@@ -30,15 +30,15 @@ class LookupChannel(object):
 
     def get_result(self,obj):
         """ The text result of autocompleting the entered query """
-        return unicode(obj)
+        return str(obj)
 
     def format_match(self,obj):
         """ (HTML) formatted item for displaying item in the dropdown """
-        return unicode(obj)
+        return str(obj)
 
     def format_item_display(self,obj):
         """ (HTML) formatted item for displaying item in the selected deck area """
-        return unicode(obj)
+        return str(obj)
 
     def get_objects(self,ids):
         """ Get the currently selected objects when editing an existing model """
@@ -48,7 +48,7 @@ class LookupChannel(object):
         # see OrdredManyToMany.md
         ids = [int(id) for id in ids]
         things = self.model.objects.in_bulk(ids)
-        return [things[aid] for aid in ids if things.has_key(aid)]
+        return [things[aid] for aid in ids if aid in things]
 
     def can_add(self,user,argmodel):
         """ Check if the user has permission to add 
@@ -92,7 +92,7 @@ def make_ajax_form(model,fieldlist,superclass=ModelForm,show_help_text=False,**k
             pass
         setattr(Meta, 'model', model)
 
-    for model_fieldname,channel in fieldlist.iteritems():
+    for model_fieldname,channel in fieldlist.items():
         f = make_ajax_field(model,model_fieldname,channel,show_help_text)
 
         TheForm.declared_fields[model_fieldname] = f
@@ -124,19 +124,19 @@ def make_ajax_field(model,model_fieldname,channel,show_help_text = False,**kwarg
                                    AutoCompleteSelectField
 
     field = model._meta.get_field(model_fieldname)
-    if kwargs.has_key('label'):
+    if 'label' in kwargs:
         label = kwargs.pop('label')
     else:
-        label = _(capfirst(unicode(field.verbose_name)))
+        label = _(capfirst(str(field.verbose_name)))
 
-    if kwargs.has_key('help_text'):
+    if 'help_text' in kwargs:
         help_text = kwargs.pop('help_text')
     else:
-        if isinstance(field.help_text,basestring) and field.help_text:
+        if isinstance(field.help_text,str) and field.help_text:
             help_text = _(field.help_text)
         else:
             help_text = field.help_text
-    if kwargs.has_key('required'):
+    if 'required' in kwargs:
         required = kwargs.pop('required')
     else:
         required = not field.blank
@@ -194,15 +194,15 @@ def get_lookup(channel):
         if not hasattr(lookup_class,'format_match'):
             setattr(lookup_class, 'format_match',
                 getattr(lookup_class,'format_item',
-                    lambda self,obj: unicode(obj)))
+                    lambda self,obj: str(obj)))
         if not hasattr(lookup_class,'format_item_display'):
             setattr(lookup_class, 'format_item_display',
                 getattr(lookup_class,'format_item', 
-                    lambda self,obj: unicode(obj)))
+                    lambda self,obj: str(obj)))
         if not hasattr(lookup_class,'get_result'):
             setattr(lookup_class, 'get_result',
                 getattr(lookup_class,'format_result', 
-                    lambda self,obj: unicode(obj)))
+                    lambda self,obj: str(obj)))
 
         return lookup_class()
 
